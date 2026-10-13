@@ -29,6 +29,7 @@
       </a>
       <nav class="top__nav" aria-label="Sections">
         <a href="#projects">Projects</a>
+        <a href="#start">Get started</a>
         <a href="#principles">Principles</a>
         <a class="btn btn--small" href="https://github.com/lanbat">GitHub</a>
       </nav>
@@ -46,9 +47,9 @@
           can fork the whole stack or take the one pattern that saves you a weekend.
         </p>
         <div class="cta">
-          <a class="btn" href="#projects">See the projects</a>
-          <a class="btn btn--ghost" href="https://github.com/lanbat">Browse on GitHub</a>
-        </div>
+          <a class="btn" href="#start">Get started</a>
+          <a class="btn btn--ghost" href="#projects">See the projects</a>
+                  </div>
 
         <div class="map" aria-label="How the projects fit together">
           <a class="map__node" href="#kestrel">
@@ -96,7 +97,8 @@
                 systemd ordering, accounts, secrets and dashboard tile from it.
               </p>
               <div class="proj__links">
-                <a class="btn" href="https://lanbat.github.io/nixconf/">Interactive tour</a>
+                <a class="btn" href="#start-nixconf" data-tab-link="nixconf">Quick start</a>
+                <a class="btn btn--ghost" href="https://lanbat.github.io/nixconf/">Interactive tour</a>
                 <a class="btn btn--ghost" href="https://github.com/lanbat/nixconf">Repository</a>
               </div>
             </div>
@@ -120,6 +122,7 @@
                 moving your default route. No LuCI required.
               </p>
               <div class="proj__links">
+                <a class="btn" href="#start-kestrel" data-tab-link="kestrel">Quick start</a>
                 <a class="btn btn--ghost" href="https://github.com/lanbat/openwrt-kestrel">Repository</a>
               </div>
             </div>
@@ -142,6 +145,7 @@
                 alert when an unknown plate turns up. It is also a worked example of an external nixconf plugin.
               </p>
               <div class="proj__links">
+                <a class="btn" href="#start-parking" data-tab-link="parking">Quick start</a>
                 <a class="btn btn--ghost" href="https://github.com/lanbat/nixos-lanbat-justpark-parking">Repository</a>
               </div>
             </div>
@@ -164,6 +168,7 @@
                 agent, and a small Qwen model tuned for Home Assistant tool calls.
               </p>
               <div class="proj__links">
+                <a class="btn" href="#start-fleet" data-tab-link="fleet">Quick start</a>
                 <a class="btn btn--ghost" href="https://github.com/lanbat/runpod-llm-fleet">Repository</a>
               </div>
             </div>
@@ -174,6 +179,181 @@
               <li><b>Measured trade-offs:</b> the cost, latency and model choices are written down with the numbers</li>
             </ul>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="start" aria-labelledby="start-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="start-h">Get started in a few commands</h2>
+          <p>Pick what you want to build. Each guide lists what you need, then the shortest path from a fresh clone to a working setup, with the full walk-through one click away.</p>
+        </div>
+
+        <div class="start" data-tabs>
+          <div class="start__tabs" role="tablist" aria-label="Choose a project">
+            <button role="tab" id="tab-nixconf" aria-controls="start-nixconf" aria-selected="true"><span class="start__goal">Run a homelab</span><span class="start__proj">nixconf</span></button>
+            <button role="tab" id="tab-kestrel" aria-controls="start-kestrel" aria-selected="false" tabindex="-1"><span class="start__goal">Split up my WiFi</span><span class="start__proj">openwrt-kestrel</span></button>
+            <button role="tab" id="tab-fleet" aria-controls="start-fleet" aria-selected="false" tabindex="-1"><span class="start__goal">Host my own LLMs</span><span class="start__proj">runpod-llm-fleet</span></button>
+            <button role="tab" id="tab-parking" aria-controls="start-parking" aria-selected="false" tabindex="-1"><span class="start__goal">Guard a car park</span><span class="start__proj">parking-guard</span></button>
+          </div>
+
+          <!-- nixconf -->
+          <div class="start__panel" role="tabpanel" id="start-nixconf" aria-labelledby="tab-nixconf" tabindex="0">
+            <div class="need">
+              <h3>You need</h3>
+              <ul>
+                <li>An x86_64 server</li>
+                <li>A Raspberry Pi 5 with NVMe storage and a 64 GB microSD card</li>
+                <li>A domain, with local DNS that resolves <code>&lt;service&gt;.&lt;domain&gt;</code> to the server</li>
+                <li>A workstation with <a href="https://nixos.org/download/">Nix</a> and flakes enabled</li>
+              </ul>
+              <p class="need__tip">Just looking? The <a href="https://lanbat.github.io/nixconf/">interactive tour</a> shows the wiring without any hardware.</p>
+            </div>
+            <ol class="steps">
+              <li>
+                <h4>Clone and enter the dev shell</h4>
+                <p>It provides deploy-rs, agenix and nixos-anywhere.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>git clone https://github.com/lanbat/nixconf
+cd nixconf
+nix develop</code></pre></div>
+              </li>
+              <li>
+                <h4>Create your site's deploy files</h4>
+                <p>They are gitignored. Set your domain, host IPs and plugins in the second one.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>cp deploy.nix.example deploy.nix
+cp deployments/homelab/deploy.nix.example \
+   deployments/homelab/deploy.nix</code></pre></div>
+              </li>
+              <li>
+                <h4>Encrypt your secrets and install the server</h4>
+                <p>Follow the <a href="https://github.com/lanbat/nixconf/blob/master/secrets/README.md">secrets guide</a>, then install the server with nixos-anywhere as described in <a href="https://github.com/lanbat/nixconf/blob/master/docs/deployment-checklist.md">phase 1 of the checklist</a>. It lays out the disks with disko and LUKS.</p>
+              </li>
+              <li>
+                <h4>Deploy each host</h4>
+                <p>From then on, every change ships with deploy-rs.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>deploy --skip-checks path:.#homelab-server
+deploy --skip-checks path:.#homelab-pi-storage</code></pre></div>
+              </li>
+            </ol>
+            <p class="more">Full guide: <a href="https://github.com/lanbat/nixconf/blob/master/docs/deployment-checklist.md">Deployment checklist</a>, from bare hardware to a running site.</p>
+          </div>
+
+          <!-- kestrel -->
+          <div class="start__panel" role="tabpanel" id="start-kestrel" aria-labelledby="tab-kestrel" tabindex="0">
+            <div class="need">
+              <h3>You need</h3>
+              <ul>
+                <li>A router running OpenWrt with fw4 / nftables</li>
+                <li>SSH access to it as root</li>
+                <li>For split-routing, a WireGuard VPN provider such as Mullvad</li>
+              </ul>
+              <p class="need__tip">No LuCI needed. Everything installs from shell scripts and survives <code>sysupgrade</code>.</p>
+            </div>
+            <ol class="steps">
+              <li>
+                <h4>Clone onto the router</h4>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>git clone https://github.com/lanbat/openwrt-kestrel /root/openwrt-router
+cd /root/openwrt-router</code></pre></div>
+              </li>
+              <li>
+                <h4>Describe a network</h4>
+                <p>Each network is one config file. Set at least <code>WIFI_KEY</code>, <code>SSID</code> and <code>SUBNET</code>.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>cp extra-networks/configs/guest.conf.example \
+   extra-networks/configs/guest.conf
+vi extra-networks/configs/guest.conf</code></pre></div>
+              </li>
+              <li>
+                <h4>Install it</h4>
+                <p>This creates the subnet, firewall zone, filtered DNS, rate limits and dashboard. Repeat for <code>untrusted.conf</code> to isolate IoT devices.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>sh extra-networks/install.sh extra-networks/configs/guest.conf</code></pre></div>
+              </li>
+              <li>
+                <h4>Optional: route chosen domains through a VPN</h4>
+                <p>Put your tiers and domain lists in <code>/etc/split-routing/</code>, then run the installer.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>sh split-routing/install.sh</code></pre></div>
+              </li>
+            </ol>
+            <p class="more">Full guides: <a href="https://github.com/lanbat/openwrt-kestrel/blob/main/extra-networks/README.md">extra-networks</a> · <a href="https://github.com/lanbat/openwrt-kestrel/blob/main/split-routing/docs/mullvad-routing.md">split-routing</a> · <a href="https://github.com/lanbat/openwrt-kestrel/blob/main/split-routing/docs/troubleshooting.md">troubleshooting</a></p>
+          </div>
+
+          <!-- fleet -->
+          <div class="start__panel" role="tabpanel" id="start-fleet" aria-labelledby="tab-fleet" tabindex="0">
+            <div class="need">
+              <h3>You need</h3>
+              <ul>
+                <li>A <a href="https://www.runpod.io/">RunPod</a> account and API key</li>
+                <li><code>curl</code>, <code>python3</code>, <code>sqlite3</code> and <code>npm</code></li>
+              </ul>
+              <p class="need__tip">Endpoints scale to zero, so you pay only while a request is running. The first request after an idle period waits for a cold start.</p>
+            </div>
+            <ol class="steps">
+              <li>
+                <h4>Clone and store your key</h4>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>git clone https://github.com/lanbat/runpod-llm-fleet
+cd runpod-llm-fleet
+mkdir -p ~/.config/envman
+echo 'export RUNPOD_API_KEY="rpa_..."' > ~/.config/envman/RUNPOD.env</code></pre></div>
+              </li>
+              <li>
+                <h4>Deploy the fleet</h4>
+                <p>This deploys or refreshes both endpoints, installs the opencode config and runs smoke tests. Use <code>coding</code> for the coding endpoint only.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>./scripts/deploy-fleet.sh all</code></pre></div>
+              </li>
+              <li>
+                <h4>Point opencode at it</h4>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>npm install -g @opencode/cli
+./scripts/setup-opencode.sh
+./scripts/validate-opencode.sh</code></pre></div>
+              </li>
+              <li>
+                <h4>Optional: give Home Assistant a voice</h4>
+                <p>Install the <a href="https://github.com/jekalmin/extended_openai_conversation">extended_openai_conversation</a> integration and copy the settings from <code>models/home-assistant/ha-integration.yaml</code>.</p>
+              </li>
+            </ol>
+            <p class="more">Full guides: <a href="https://github.com/lanbat/runpod-llm-fleet/blob/main/docs/opencode-setup.md">opencode setup</a> · <a href="https://github.com/lanbat/runpod-llm-fleet/blob/main/docs/runpod-setup.md">new RunPod endpoint</a></p>
+          </div>
+
+          <!-- parking -->
+          <div class="start__panel" role="tabpanel" id="start-parking" aria-labelledby="tab-parking" tabindex="0">
+            <div class="need">
+              <h3>You need</h3>
+              <ul>
+                <li>A <a href="#start-nixconf" data-tab-link="nixconf">nixconf</a> server with the services plugin (Frigate, Mosquitto, Home Assistant)</li>
+                <li>A camera on the car park with Frigate licence-plate recognition</li>
+                <li>Your JustPark site ID. API access is optional: a CSV export works too</li>
+              </ul>
+            </div>
+            <ol class="steps">
+              <li>
+                <h4>Add the flake input</h4>
+                <p>In your nixconf <code>flake.nix</code>:</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>inputs.lanbat-justpark-parking.url = "github:lanbat/nixos-lanbat-justpark-parking";
+inputs.lanbat-justpark-parking.inputs.nixpkgs.follows = "nixpkgs";</code></pre></div>
+              </li>
+              <li>
+                <h4>Enable the plugin and describe your site</h4>
+                <p>In <code>deployments/homelab/deploy.nix</code>:</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>hosts.server.plugins = [
+  inputs.self.lanbatPlugins.services
+  inputs.lanbat-justpark-parking.lanbatPlugin
+];
+
+deployment.parkingGuard = {
+  siteId = "YOUR_JUSTPARK_SITE_ID";
+  cameras = [ "c1" ];
+  graceMinutes = 5;
+  cooldownMinutes = 30;
+};</code></pre></div>
+              </li>
+              <li>
+                <h4>Add secrets and deploy</h4>
+                <p>Create <code>parking-guard-mqtt-pass.age</code>, and optionally the JustPark and notification secrets, as listed in the <a href="https://github.com/lanbat/nixos-lanbat-justpark-parking/blob/main/secrets/README.md">secrets guide</a>. Then deploy the server.</p>
+                <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>deploy --skip-checks path:.#homelab-server</code></pre></div>
+              </li>
+            </ol>
+            <p class="more">Full guides: <a href="https://github.com/lanbat/nixos-lanbat-justpark-parking#readme">README</a> · <a href="https://github.com/lanbat/nixos-lanbat-justpark-parking/blob/main/docs/home-assistant.md">Home Assistant automations</a></p>
+          </div>
         </div>
       </div>
     </section>
@@ -213,5 +393,6 @@
       <span><a href="https://github.com/lanbat">github.com/lanbat</a></span>
     </div>
   </footer>
+  <script src="assets/app.js" defer></script>
 </body>
 </html>

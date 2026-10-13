@@ -163,6 +163,58 @@ h3 { margin: 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; fo
 .proj li { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: .96rem; line-height: 1.45; }
 .proj li b { font-weight: 600; color: var(--ink); }
 
+/* ───── Get started ───── */
+.start { scroll-margin-top: 90px; }
+.start:not(.is-ready) .start__tabs { display: none; }
+.start:not(.is-ready) .start__panel + .start__panel { margin-top: 20px; }
+.start__tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.start__tabs button {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  text-align: left; cursor: pointer;
+  padding: 14px 16px; border-radius: 12px;
+  background: var(--paper); color: var(--ink); border: 1.5px solid var(--line);
+  font: inherit; transition: border-color .15s, background .15s, color .15s;
+}
+.start__tabs button:hover { border-color: var(--ink); }
+.start__tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.start__goal { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+.start__proj { font-family: var(--mono); font-size: .8rem; color: var(--ink-2); }
+.start__tabs button[aria-selected="true"] .start__proj { color: var(--amber); }
+
+.start__panel {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(24px, 4vw, 56px);
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--r);
+  padding: clamp(22px, 3.5vw, 40px);
+}
+.start__panel[hidden] { display: none; }
+.need h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.need ul { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.need li { padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .95rem; line-height: 1.45; }
+.need__tip { margin: 16px 0 0; font-size: .92rem; color: var(--ink-2); padding: 12px 14px; background: rgba(242, 165, 22, .12); border-radius: 10px; }
+
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; min-width: 0; }
+.steps li { counter-increment: step; position: relative; padding-left: 46px; }
+.steps li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: -1px;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ink); color: #fff; font-weight: 700; font-size: .9rem;
+}
+.steps h4 { margin: 0 0 4px; font-size: 1.08rem; letter-spacing: -.01em; }
+.steps p { margin: 0 0 10px; color: var(--ink-2); font-size: .97rem; }
+.code { position: relative; background: var(--dusk); border-radius: 10px; }
+.code pre { margin: 0; padding: 14px 16px; padding-right: 76px; overflow-x: auto; }
+.code code { background: none; padding: 0; color: var(--on-dusk); font-size: .84rem; line-height: 1.6; white-space: pre; }
+.copy {
+  position: absolute; top: 8px; right: 8px;
+  font: 500 .76rem var(--mono); cursor: pointer;
+  padding: 4px 9px; border-radius: 6px;
+  background: var(--dusk-2); color: var(--on-dusk-2); border: 1px solid var(--dusk-line);
+}
+.copy:hover { color: #fff; border-color: var(--on-dusk-2); }
+.more { grid-column: 2; margin: 4px 0 0; font-size: .95rem; color: var(--ink-2); }
+
 /* ───── Principles ───── */
 .beliefs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 40px; list-style: none; margin: 0; padding: 0; }
 .beliefs li { border-top: 2px solid var(--ink); padding-top: 14px; }
@@ -183,16 +235,22 @@ h3 { margin: 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; fo
   .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proj { grid-template-columns: minmax(0, 1fr); }
   .beliefs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .start__tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .start__panel { grid-template-columns: minmax(0, 1fr); }
+  .more { grid-column: 1; }
 }
 @media (max-width: 720px) {
   .wrap { width: calc(100% - 32px); }
   .top__nav a:not(.btn) { display: none; }
   .map { grid-template-columns: minmax(0, 1fr); }
   .beliefs { grid-template-columns: minmax(0, 1fr); }
+  .steps li { padding-left: 0; }
+  .steps li::before { position: static; margin-bottom: 8px; }
+  .code pre { padding: 40px 14px 14px; }
   .lead { font-size: 1.08rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .map__node, .btn { transition: none; }
+  .map__node, .btn, .start__tabs button { transition: none; }
   .map__node:hover { transform: none; }
 }
