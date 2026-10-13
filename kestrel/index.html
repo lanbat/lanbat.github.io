@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kestrel in Rust: native trust zones for OpenWrt</title>
+  <meta name="description" content="The Rust rewrite of openwrt-kestrel: isolated WiFi trust zones, join approval, device fingerprinting and per-device VPN routing for OpenWrt, shipped as one native .apk/.ipk package.">
+  <meta name="theme-color" content="#e9edf4">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://lanbat.github.io/kestrel/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="kestrel in Rust: native trust zones for OpenWrt">
+  <meta property="og:description" content="One native package for OpenWrt: isolated WiFi zones, join approval, device fingerprinting and domain-based VPN routing. No daemon, no extra port.">
+  <meta property="og:url" content="https://lanbat.github.io/kestrel/">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preload" href="../assets/fonts/bricolage-grotesque-400-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="kestrel.css">
+</head>
+<body class="k">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top__row">
+      <a class="mark" href="../" aria-label="LAN BAT home">
+        <span class="mark__tile" aria-hidden="true"><svg viewBox="0 0 32 32" width="30" height="30"><path fill="currentColor" d="M16 10 17.6 5.8 19.2 10.2C22.5 8.6 26.5 9.4 30 13Q27.6 13.2 26.4 16.6Q24.2 15 22.4 17.4Q21 16.6 19.6 21.4L16 26.5 12.4 21.4Q11 16.6 9.6 17.4Q7.8 15 5.6 16.6Q4.4 13.2 2 13C5.5 9.4 9.5 8.6 12.8 10.2L14.4 5.8Z"/></svg></span>
+        <span>LAN <span class="mark__b">BAT</span><span class="crumb"> / kestrel</span></span>
+      </a>
+      <nav class="top__nav" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a class="btn btn--small" href="https://github.com/lanbat/openwrt-kestrel/tree/rust-rewrite">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap k-hero">
+        <div>
+          <p class="eyebrow"><span class="pill">rust-rewrite branch</span> v0.2.1 · GPL-3.0 · OpenWrt stable (opkg) and snapshots (apk)</p>
+          <h1>Trust zones for your router. <span class="dim">Now one native package.</span></h1>
+          <p class="lead">
+            kestrel splits your WiFi into isolated networks for guests, IoT gadgets and everything you
+            don't trust, then gives you a say over every device that joins and every domain it reaches.
+            The Rust rewrite turns the original shell toolkit into a single <code>.apk</code> or
+            <code>.ipk</code>: a fast CGI binary for the router UI and a parallel blocklist resolver,
+            cross-compiled for most router CPUs.
+          </p>
+          <div class="cta">
+            <a class="btn" href="#install">Install v0.2.1</a>
+            <a class="btn btn--ghost" href="https://github.com/lanbat/openwrt-kestrel/tree/rust-rewrite">Browse the branch</a>
+          </div>
+        </div>
+
+        <figure class="phone" aria-label="Example push notification">
+          <div class="note">
+            <div class="note__app"><span class="note__icon" aria-hidden="true"></span>ntfy · kestrel<span class="note__time">now</span></div>
+            <p class="note__title">New device on <b>untrusted</b></p>
+            <p class="note__body">Espressif 7c:df:a1 asked to join. Looks like it was <b>“kitchen plug”</b> before its MAC changed.</p>
+            <div class="note__actions"><span class="note__btn note__btn--yes">Approve</span><span class="note__btn">Deny</span></div>
+          </div>
+          <div class="note note--muted">
+            <div class="note__app"><span class="note__icon" aria-hidden="true"></span>ntfy · kestrel<span class="note__time">2m</span></div>
+            <p class="note__title">“kitchen plug” wants <b>api.tuya.com</b></p>
+            <p class="note__body">Blocked until you allow it. Route via WAN or a VPN tier.</p>
+          </div>
+          <figcaption>An illustration of the approval flow, not a screenshot.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section k-why" aria-labelledby="why-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="why-h">Why rewrite it in Rust?</h2>
+          <p>The shell toolkit on <code>main</code> still works. The rewrite moves the router UI and blocklist handling into compiled Rust, ships them as a real OpenWrt package, and adds features the shell version never had.</p>
+        </div>
+        <div class="compare" role="table" aria-label="Shell toolkit compared with the Rust rewrite">
+          <div class="compare__row compare__row--head" role="row">
+            <span role="columnheader"></span><span role="columnheader">main · shell toolkit</span><span role="columnheader">rust-rewrite · native package</span>
+          </div>
+          <div class="compare__row" role="row"><span role="rowheader">Install</span><span role="cell">git clone + install scripts</span><span role="cell"><code>apk add</code> / <code>opkg install</code>, then the same scripts for your networks</span></div>
+          <div class="compare__row" role="row"><span role="rowheader">Router UI</span><span role="cell">Shell CGI scripts</span><span role="cell"><code>kestreld</code>, one compiled CGI binary with typed templates</span></div>
+          <div class="compare__row" role="row"><span role="rowheader">Blocklists</span><span role="cell">Shell resolution</span><span role="cell"><code>nft-resolve</code>: eight formats, parallel DNS, atomic nft updates</span></div>
+          <div class="compare__row" role="row"><span role="rowheader">Devices</span><span role="cell">Known by MAC address</span><span role="cell">Recognised across privacy-MAC rotation by fingerprint</span></div>
+          <div class="compare__row" role="row"><span role="rowheader">VPN routing</span><span role="cell">By domain list</span><span role="cell">By domain list, or per device and per rule from the device page</span></div>
+          <div class="compare__row" role="row"><span role="rowheader">Testing</span><span role="cell">On the router</span><span role="cell">Unit tests plus a QEMU OpenWrt VM with virtual WiFi radios</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="how-h">No daemon. No extra port. No reverse proxy.</h2>
+          <p><code>kestreld</code> is a CGI binary that uhttpd already knows how to run. Each request starts it fresh, so it uses no memory while idle, and uhttpd keeps handling HTTPS and authentication exactly as it does for LuCI.</p>
+        </div>
+
+        <div class="flow" aria-label="Request flow">
+          <div class="flow__node"><span class="flow__k">client</span><b>Your browser</b><span>dashboard, device pages, approval links from notifications</span></div>
+          <div class="flow__arrow" aria-hidden="true">→</div>
+          <div class="flow__node"><span class="flow__k">router</span><b>uhttpd</b><span>HTTPS and auth as usual; <code>/www/cgi-bin/*</code> symlinks</span></div>
+          <div class="flow__arrow" aria-hidden="true">→</div>
+          <div class="flow__node flow__node--hot"><span class="flow__k">per request</span><b>kestreld</b><span>Rust, askama templates; status page cached for 5 s</span></div>
+          <div class="flow__arrow" aria-hidden="true">→</div>
+          <div class="flow__node"><span class="flow__k">system</span><b>fw4 · dnsmasq · hostapd</b><span>nft counters, WireGuard peers, DHCP leases, neighbour table</span></div>
+        </div>
+
+        <div class="routes">
+          <h3>Routes served by kestreld</h3>
+          <table>
+            <thead><tr><th scope="col">Route</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /cgi-bin/status</code></td><td>Live dashboard: WiFi clients, traffic counters, WireGuard peers, DHCP leases</td></tr>
+              <tr><td><code>GET /cgi-bin/network</code></td><td>Detail page for one isolated network</td></tr>
+              <tr><td><code>GET|POST /cgi-bin/device</code></td><td>Label, rate-limit, approve or revoke rules, delete a device</td></tr>
+              <tr><td><code>GET /cgi-bin/identity</code></td><td>Fingerprint and label history for a device across MAC rotations</td></tr>
+              <tr><td><code>GET|POST /cgi-bin/approve-join</code></td><td>Approve, deny or label a device waiting to join</td></tr>
+              <tr><td><code>GET|POST /cgi-bin/approve-access</code></td><td>Grant temporary LAN ↔ isolated access</td></tr>
+              <tr><td><code>GET /cgi-bin/qr</code></td><td>WiFi QR code as SVG</td></tr>
+              <tr><td><code>POST /cgi-bin/rotate-password</code></td><td>Rotate the WiFi password and regenerate the QR</td></tr>
+            </tbody>
+          </table>
+          <p class="routes__note">For local development, <code>kestreld 8080</code> runs the same pages as a standalone HTTP server.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features" aria-labelledby="features-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="features-h">What you get</h2>
+        </div>
+        <div class="feat">
+          <article>
+            <span class="proj__tag proj__tag--moss">networks</span>
+            <h3>Isolated WiFi networks</h3>
+            <ul>
+              <li>One config file per network deploys its own subnet, firewall zone, DNS policy and rate limit</li>
+              <li><b>Join approval:</b> new devices stay offline until you tap Approve on a push notification</li>
+              <li><b>Device fingerprinting</b> from DHCP, WiFi and mDNS signals recognises a device after its MAC rotates. It only suggests a match; you confirm it</li>
+              <li><b>Per-device outbound control:</b> each approved device must be allowed every domain or IP it reaches</li>
+              <li>Approval in both directions between LAN and isolated networks, with rules that expire on their own</li>
+              <li>Access hours, bandwidth alerts, temporary port forwards, password rotation with a live QR code</li>
+              <li>WPA3/WPA2, dual-band, IPv6, VLAN trunking</li>
+            </ul>
+          </article>
+          <article>
+            <span class="proj__tag proj__tag--cobalt">split-routing</span>
+            <h3>Domain-based VPN routing</h3>
+            <ul>
+              <li>Send chosen domains or categories through WireGuard without moving the default gateway</li>
+              <li>Several independent VPN tiers, each with its own categories, local lists and remote sources</li>
+              <li>Route one device's approved domain through a tier straight from its device page</li>
+              <li>Isolated networks never use the tunnel: their bridges are excluded from the VPN mark chain</li>
+            </ul>
+            <span class="proj__tag proj__tag--amber">nft-resolve</span>
+            <h3>Blocklist resolver</h3>
+            <ul>
+              <li>Reads Adblock, dnsmasq, hosts, RPZ, Unbound, ipset, clash and plain-domain lists</li>
+              <li>Resolves in parallel and applies the result to nftables sets atomically</li>
+            </ul>
+          </article>
+          <article>
+            <span class="proj__tag proj__tag--rose">alerts</span>
+            <h3>Know what changed</h3>
+            <ul>
+              <li>ntfy.sh push notifications for nearly every state change, plus a daily digest</li>
+              <li>Per-device DNS history, flagged against your adblock list</li>
+              <li>Pending connections flagged against banIP threat-intelligence feeds</li>
+              <li>Live dashboard of devices, traffic, VPN health, pending approvals and port forwards</li>
+              <li>A workaround for the MediaTek Filogic WiFi driver bug that drops virtual APs</li>
+            </ul>
+          </article>
+        </div>
+
+        <aside class="exp" aria-labelledby="sf-h">
+          <div>
+            <span class="pill pill--exp">experimental · v0.0.1 · separate package</span>
+            <h3 id="sf-h">social-firewall: policy your neighbours can vouch for</h3>
+            <p>
+              An optional add-on in which routers publish <b>signed, reason-required opinions</b> about domains and
+              IPs and follow each other with a trust weight. A cron-driven applier turns the opinions you follow
+              into enforcement in its own <code>inet social_firewall</code> nftables table, which never touches fw4.
+              Peers sync over Iroh with a Reticulum fallback, and an opt-in IRCv3 gateway on your LAN lets you chat,
+              vote and run guarded policy commands from any IRC client.
+            </p>
+          </div>
+          <ul>
+            <li>Neither kestrel nor social-firewall depends on the other</li>
+            <li>Identities and signatures are the security boundary; nicknames are only labels</li>
+            <li>Local apply is a dry run until you confirm it</li>
+            <li>Install with <code>sh install.sh social-firewall</code>; remove it the same way</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="install" aria-labelledby="install-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="install-h">Install from a release</h2>
+          <p>You need an OpenWrt router with fw4 / nftables and SSH access as root. Pick the package for your CPU from the <a href="https://github.com/lanbat/openwrt-kestrel/releases/latest">latest release</a>; <code>apk info --print-arch</code> or <code>opkg print-architecture</code> tells you which.</p>
+        </div>
+
+        <div class="install">
+          <ol class="steps">
+            <li>
+              <h4>Install the package</h4>
+              <p>Snapshot builds use apk; stable releases use opkg.</p>
+              <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code># OpenWrt snapshot
+apk add --allow-untrusted /tmp/kestrel-*.aarch64.apk
+
+# OpenWrt stable
+opkg install /tmp/kestrel_*_aarch64_cortex-a53.ipk</code></pre></div>
+            </li>
+            <li>
+              <h4>Clone the network scripts onto the router</h4>
+              <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>git clone -b rust-rewrite https://github.com/lanbat/openwrt-kestrel /root/openwrt-kestrel
+cd /root/openwrt-kestrel</code></pre></div>
+            </li>
+            <li>
+              <h4>Describe and install a network</h4>
+              <p>Set at least <code>WIFI_KEY</code>, <code>SSID</code> and <code>SUBNET</code>. Repeat with <code>untrusted.conf</code> for IoT.</p>
+              <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>cp networks/configs/guest.conf.example networks/configs/guest.conf
+vi networks/configs/guest.conf
+sh networks/install.sh networks/configs/guest.conf</code></pre></div>
+            </li>
+            <li>
+              <h4>Open the dashboard</h4>
+              <p>It is served by the uhttpd you already have, at <code>https://&lt;router&gt;/cgi-bin/status</code>. Optionally, put VPN tiers in <code>/etc/kestrel/split-routing/</code> and run <code>sh split-routing/install.sh</code>.</p>
+            </li>
+          </ol>
+
+          <div class="arch">
+            <h3>Prebuilt packages</h3>
+            <table>
+              <thead><tr><th scope="col">Package arch</th><th scope="col">Typical hardware</th></tr></thead>
+              <tbody>
+                <tr><td><code>aarch64</code></td><td>MediaTek Filogic, Qualcomm IPQ50xx/60xx/807x, Rockchip, mvebu</td></tr>
+                <tr><td><code>x86_64</code></td><td>PC Engines APU, Protectli, VMs</td></tr>
+                <tr><td><code>arm_cortex-a7</code></td><td>IPQ40xx, IPQ806x and other ARMv7 boards</td></tr>
+                <tr><td><code>arm_arm1176jzf-s</code></td><td>Older ARMv6 boards</td></tr>
+                <tr><td><code>riscv64</code></td><td>SiFive and StarFive boards</td></tr>
+              </tbody>
+            </table>
+            <p class="arch__note">MIPS (<code>ath79</code>, <code>ramips</code>) can be built from source with <code>make package CROSS_TARGET=mipsel-unknown-linux-musl …</code>; prebuilt MIPS packages are best effort. 32-bit PowerPC is not supported.</p>
+            <p class="arch__note">Coming from the old <code>extra-networks</code> package? Remove it first with <code>apk del extra-networks</code> or <code>opkg remove extra-networks</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="hack" aria-labelledby="hack-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="hack-h">Hack on it without a router</h2>
+          <p>The test rig boots a real OpenWrt image in QEMU with <code>mac80211_hwsim</code> virtual radios, so hostapd, fw4, dnsmasq and kestreld run their real code paths against a virtual WiFi client.</p>
+        </div>
+        <div class="hack">
+          <div>
+            <h3>Boot the test router</h3>
+            <p>Needs QEMU with KVM, Docker and <a href="https://github.com/cross-rs/cross">cross</a>.</p>
+            <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>test/qemu/setup.sh
+test/qemu/provision.sh
+test/qemu/deploy.sh test/qemu/configs/guest.conf \
+                    test/qemu/configs/untrusted.conf
+# then open http://127.0.0.1:8080/cgi-bin/status</code></pre></div>
+          </div>
+          <div>
+            <h3>Build and ship to a real router</h3>
+            <p>Cross-compiles both binaries, packages them and installs over SSH, detecting apk or opkg.</p>
+            <div class="code"><button class="copy" type="button" data-copy>Copy</button><pre><code>make build                      # aarch64 by default
+make package                    # .apk and .ipk
+make deploy ROUTER=192.168.1.1</code></pre></div>
+          </div>
+        </div>
+        <p class="more">Read <a href="https://github.com/lanbat/openwrt-kestrel/blob/rust-rewrite/CONTRIBUTING.md">CONTRIBUTING.md</a> for the testing hierarchy and shell-to-Rust porting conventions, and <a href="https://github.com/lanbat/openwrt-kestrel/blob/rust-rewrite/test/qemu/README.md">test/qemu</a> for what the VM does and does not cover.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="band">
+          <div>
+            <h2>Try the rewrite, tell us what breaks</h2>
+            <p>The rust-rewrite branch is where kestrel's releases come from today. Issues and pull requests are welcome, especially from people with hardware we don't have.</p>
+          </div>
+          <a class="btn btn--light" href="https://github.com/lanbat/openwrt-kestrel/issues">Open an issue</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__row">
+      <span>openwrt-kestrel is part of <a href="../">LAN BAT</a> · GPL-3.0</span>
+      <span><a href="https://github.com/lanbat/openwrt-kestrel">github.com/lanbat/openwrt-kestrel</a></span>
+    </div>
+  </footer>
+  <script src="../assets/app.js" defer></script>
+</body>
+</html>

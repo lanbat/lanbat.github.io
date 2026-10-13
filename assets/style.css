@@ -204,7 +204,7 @@ h3 { margin: 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; fo
 .steps h4 { margin: 0 0 4px; font-size: 1.08rem; letter-spacing: -.01em; }
 .steps p { margin: 0 0 10px; color: var(--ink-2); font-size: .97rem; }
 .code { position: relative; background: var(--dusk); border-radius: 10px; }
-.code pre { margin: 0; padding: 14px 16px; padding-right: 76px; overflow-x: auto; }
+.code pre { margin: 0; padding: 38px 16px 14px; overflow-x: auto; }
 .code code { background: none; padding: 0; color: var(--on-dusk); font-size: .84rem; line-height: 1.6; white-space: pre; }
 .copy {
   position: absolute; top: 8px; right: 8px;
@@ -246,7 +246,6 @@ h3 { margin: 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; fo
   .beliefs { grid-template-columns: minmax(0, 1fr); }
   .steps li { padding-left: 0; }
   .steps li::before { position: static; margin-bottom: 8px; }
-  .code pre { padding: 40px 14px 14px; }
   .lead { font-size: 1.08rem; }
 }
 @media (prefers-reduced-motion: reduce) {
