@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAN BAT: open home infrastructure</title>
+  <meta name="description" content="LAN BAT publishes the code behind a real home network: a NixOS homelab flake, OpenWrt router toolkits, a Frigate parking-enforcement plugin and a self-hosted LLM fleet. Read it, fork it, borrow the patterns.">
+  <meta name="theme-color" content="#e9edf4">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://lanbat.github.io/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LAN BAT: open home infrastructure">
+  <meta property="og:description" content="A NixOS homelab, OpenWrt router toolkits, a Frigate LPR plugin and a self-hosted LLM fleet, all published as forkable references.">
+  <meta property="og:url" content="https://lanbat.github.io/">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preload" href="assets/fonts/bricolage-grotesque-400-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top__row">
+      <a class="mark" href="#top" aria-label="LAN BAT, top of page">
+        <span class="mark__tile" aria-hidden="true"><svg viewBox="0 0 32 32" width="30" height="30"><path fill="currentColor" d="M16 10 17.6 5.8 19.2 10.2C22.5 8.6 26.5 9.4 30 13Q27.6 13.2 26.4 16.6Q24.2 15 22.4 17.4Q21 16.6 19.6 21.4L16 26.5 12.4 21.4Q11 16.6 9.6 17.4Q7.8 15 5.6 16.6Q4.4 13.2 2 13C5.5 9.4 9.5 8.6 12.8 10.2L14.4 5.8Z"/></svg></span>
+        <span>LAN <span class="mark__b">BAT</span></span>
+      </a>
+      <nav class="top__nav" aria-label="Sections">
+        <a href="#projects">Projects</a>
+        <a href="#principles">Principles</a>
+        <a class="btn btn--small" href="https://github.com/lanbat">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="wrap">
+        <p class="eyebrow">github.com/lanbat · open source · runs in a real home</p>
+        <h1>Home infrastructure <span class="dim">you can read.</span></h1>
+        <p class="lead">
+          LAN BAT publishes the code behind one working home network: the router, the servers, the
+          cameras and the voice assistant. Everything is declarative, tested and written up, so you
+          can fork the whole stack or take the one pattern that saves you a weekend.
+        </p>
+        <div class="cta">
+          <a class="btn" href="#projects">See the projects</a>
+          <a class="btn btn--ghost" href="https://github.com/lanbat">Browse on GitHub</a>
+        </div>
+
+        <div class="map" aria-label="How the projects fit together">
+          <a class="map__node" href="#kestrel">
+            <span class="map__where">Router</span>
+            <span class="map__name">openwrt-kestrel</span>
+            <span class="map__does">Isolated WiFi zones for guests and IoT, and VPN routing by domain.</span>
+          </a>
+          <a class="map__node" href="#nixconf">
+            <span class="map__where">Server + Pi 5</span>
+            <span class="map__name">nixconf</span>
+            <span class="map__does">The homelab as one NixOS flake: SSO, media, photos, cameras, Home Assistant.</span>
+          </a>
+          <a class="map__node" href="#parking">
+            <span class="map__where">nixconf plugin</span>
+            <span class="map__name">parking-guard</span>
+            <span class="map__does">Frigate number-plate reads checked against JustPark bookings.</span>
+          </a>
+          <a class="map__node" href="#fleet">
+            <span class="map__where">GPU cloud</span>
+            <span class="map__name">runpod-llm-fleet</span>
+            <span class="map__does">Self-hosted LLMs for the coding agent and the Home Assistant voice agent.</span>
+          </a>
+          <p class="map__caption">traffic enters at the <b>router</b> → services run on the <b>server</b> → plugins extend it → language models answer from <b>your own endpoints</b></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects" aria-labelledby="projects-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="projects-h">Four repositories, one network</h2>
+          <p>Each project stands on its own. Together they cover a home network from the WiFi edge to the language models.</p>
+        </div>
+
+        <div class="projects">
+          <article class="proj" id="nixconf" aria-labelledby="nixconf-h">
+            <div>
+              <span class="proj__tag proj__tag--cobalt">NixOS · flake</span>
+              <h3 id="nixconf-h">nixconf</h3>
+              <p class="proj__repo">lanbat/nixconf · MIT</p>
+              <p>
+                A production homelab as one NixOS flake. An x86_64 server and a Raspberry Pi 5 run more than
+                20 self-hosted services with single sign-on and no Kubernetes. Each service is one short
+                <code>lanbat.services.&lt;name&gt;</code> block, and the flake generates the Caddy vhost,
+                systemd ordering, accounts, secrets and dashboard tile from it.
+              </p>
+              <div class="proj__links">
+                <a class="btn" href="https://lanbat.github.io/nixconf/">Interactive tour</a>
+                <a class="btn btn--ghost" href="https://github.com/lanbat/nixconf">Repository</a>
+              </div>
+            </div>
+            <ul>
+              <li><b>Authentik SSO</b> wired into every service from its one-line description</li>
+              <li><b>Two security tiers:</b> infrastructure boots without a key, personal data waits for an unlock</li>
+              <li><b>Fail-safe storage:</b> NFS-backed services stop cleanly and resume by themselves</li>
+              <li><b>disko, agenix, deploy-rs,</b> plus an assertion and VM test suite on every PR</li>
+            </ul>
+          </article>
+
+          <article class="proj" id="kestrel" aria-labelledby="kestrel-h">
+            <div>
+              <span class="proj__tag proj__tag--moss">OpenWrt · shell + nftables</span>
+              <h3 id="kestrel-h">openwrt-kestrel</h3>
+              <p class="proj__repo">lanbat/openwrt-kestrel</p>
+              <p>
+                Two toolkits for OpenWrt routers. <strong>extra-networks</strong> splits your WiFi into isolated
+                trust zones for guests and IoT, with join approval, per-device controls and a live
+                dashboard. <strong>split-routing</strong> sends chosen domains through a WireGuard VPN without
+                moving your default route. No LuCI required.
+              </p>
+              <div class="proj__links">
+                <a class="btn btn--ghost" href="https://github.com/lanbat/openwrt-kestrel">Repository</a>
+              </div>
+            </div>
+            <ul>
+              <li><b>One script per network:</b> <code>install.sh configs/guest.conf</code> deploys a whole zone</li>
+              <li><b>Join approval</b> through a push notification with an Approve button</li>
+              <li><b>Filtered DNS,</b> blocked DNS bypass, rate limits and MAC allowlists via fw4</li>
+              <li><b>Domain-based VPN routing</b> with lazy dnsmasq resolution and daily list updates</li>
+            </ul>
+          </article>
+
+          <article class="proj" id="parking" aria-labelledby="parking-h">
+            <div>
+              <span class="proj__tag proj__tag--rose">nixconf plugin · Frigate LPR</span>
+              <h3 id="parking-h">parking-guard</h3>
+              <p class="proj__repo">lanbat/nixos-lanbat-justpark-parking</p>
+              <p>
+                Automatic parking enforcement for a shared car park. It syncs JustPark bookings and resident
+                plates into a local allowlist, listens for Frigate licence-plate reads on MQTT, and raises an
+                alert when an unknown plate turns up. It is also a worked example of an external nixconf plugin.
+              </p>
+              <div class="proj__links">
+                <a class="btn btn--ghost" href="https://github.com/lanbat/nixos-lanbat-justpark-parking">Repository</a>
+              </div>
+            </div>
+            <ul>
+              <li><b>Bookings from the JustPark API</b> or a CSV drop, with no API contract needed to start</li>
+              <li><b>MQTT in and out:</b> every decision goes to <code>parking-guard/event</code></li>
+              <li><b>Notifications</b> through Pushover, Telegram or Home Assistant automations</li>
+              <li><b>One flake input</b> and a <code>deployment.parkingGuard</code> block to enable</li>
+            </ul>
+          </article>
+
+          <article class="proj" id="fleet" aria-labelledby="fleet-h">
+            <div>
+              <span class="proj__tag proj__tag--amber">LLMs · RunPod serverless</span>
+              <h3 id="fleet-h">runpod-llm-fleet</h3>
+              <p class="proj__repo">lanbat/runpod-llm-fleet</p>
+              <p>
+                Open-weight language models on your own serverless GPU endpoints instead of a hosted API. Each
+                purpose gets its own model, scaling policy and test suite: a Qwen coding model for the opencode
+                agent, and a small Qwen model tuned for Home Assistant tool calls.
+              </p>
+              <div class="proj__links">
+                <a class="btn btn--ghost" href="https://github.com/lanbat/runpod-llm-fleet">Repository</a>
+              </div>
+            </div>
+            <ul>
+              <li><b>Scale-to-zero</b> endpoints, so you pay only while a request is running</li>
+              <li><b>One script</b> to deploy, refresh or smoke-test the whole fleet</li>
+              <li><b>Behaviour tests</b> per model, including real tool calling against Home Assistant intents</li>
+              <li><b>Measured trade-offs:</b> the cost, latency and model choices are written down with the numbers</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="principles" aria-labelledby="principles-h">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 id="principles-h">What the projects have in common</h2>
+        </div>
+        <ul class="beliefs">
+          <li><h4>Declared, not clicked</h4><p>Config lives in files you can diff and review. Rebuilding a machine means running a command, not following a wiki page.</p></li>
+          <li><h4>Your hardware, your data</h4><p>Services stay on your LAN behind your own CA and sign-on. Even the language models run on endpoints you control.</p></li>
+          <li><h4>Failure is a normal state</h4><p>Storage drops, routers reboot and GPUs go cold. Each project says what happens when they do, and recovers by itself.</p></li>
+          <li><h4>Small, boring parts</h4><p>systemd, nftables, dnsmasq and MQTT. Tools you can debug at midnight beat clever orchestration.</p></li>
+          <li><h4>Tested and written up</h4><p>CI checks, VM tests and model test suites run alongside docs that explain why each choice was made.</p></li>
+          <li><h4>Built to be forked</h4><p>Site-specific values stay out of git. Copy a template, fill in your domain, and the rest is yours.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="band">
+          <div>
+            <h2>Start with the homelab</h2>
+            <p>nixconf is the centre of LAN BAT. The interactive tour lets you edit a service and see the wiring the flake generates.</p>
+          </div>
+          <a class="btn btn--light" href="https://lanbat.github.io/nixconf/">Take the tour</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__row">
+      <span>LAN BAT · home automation &amp; infrastructure for the community</span>
+      <span><a href="https://github.com/lanbat">github.com/lanbat</a></span>
+    </div>
+  </footer>
+</body>
+</html>
